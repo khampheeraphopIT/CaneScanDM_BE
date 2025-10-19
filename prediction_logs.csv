@@ -7,3 +7,4 @@ Timestamp,Image_Path,Disease,Confidence,Risk_Level,Province,Temperature,Humidity
 2025-10-17 09:21:09.093108,uploads\87d2c0e7_c2301011c9ffb5b84b7b0d9e461850ee_20251017_092109.jpg,Rust,0.9769940972328186,Medium,กรุงเทพมหานคร,33.6,62,1.37
 2025-10-17 09:37:17.801353,uploads\image_20251017_093717.png,Redrot,0.43722766637802124,Medium,นครสวรรค์,33.53,91,0.0
 2025-10-19 01:50:58.482860,C:\Users\poplo\Desktop\DM\uploads\87d2c0e7_c2301011c9ffb5b84b7b0d9e461850ee_20251019_015058.jpg,Rust,0.9769940972328186,Medium,กรุงเทพมหานคร,29.05,75,0.0
+2025-10-19 02:00:51.653652,C:\Users\poplo\Desktop\DM\uploads\87d2c0e7_c2301011c9ffb5b84b7b0d9e461850ee_20251019_020051.jpg,Rust,0.9769940972328186,High,สิงห์บุรี,31.5,79,0.0
