@@ -23,6 +23,7 @@ from pytorch_grad_cam import GradCAM
 from pytorch_grad_cam.utils.image import show_cam_on_image
 from skimage.feature import graycomatrix, graycoprops, local_binary_pattern
 from tqdm import tqdm
+from datetime import datetime
 
 # Setup logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -283,36 +284,41 @@ def compute_all_features(image_path, province=None):
 
 # Data preparation
 def prepare_data(csv_path):
+    # อ่าน CSV
     df = pd.read_csv(csv_path)
+
+    # เอา directory ของ CSV เป็นฐานสำหรับ path รูป
+    images_dir = os.path.abspath(os.path.join(os.path.dirname(csv_path), "src/images"))
+    df['Image_URL'] = df['Image_URL'].apply(lambda x: os.path.join(images_dir, os.path.basename(x)))
 
     # ลบลิงก์ซ้ำ
     logger.info(f"จำนวนแถวก่อนลบลิงก์ซ้ำ: {len(df)}")
     df = df.drop_duplicates(subset=['Image_URL'])
     logger.info(f"จำนวนแถวหลังลบลิงก์ซ้ำ: {len(df)}")
 
-    # แปลงค่าใน Disease ให้เป็นตัวพิมพ์ใหญ่ทั้งหมด
+    # แปลงค่า Disease เป็น Capitalize และ map label
     df['Disease'] = df['Disease'].str.capitalize()
     label_map = {"Healthy": 0, "Yellow": 1, "Rust": 2, "Redrot": 3, "Mosaic": 4, "Notsugarcane": 5}
     df['label'] = df['Disease'].map(label_map)
 
     # ตรวจสอบและจัดการ NaN ใน label
     if df['label'].isna().sum() > 0:
-        logger.warning(f"Found {df['label'].isna().sum()} rows with NaN in label. Filling with -1.")
-        df['label'] = df['label'].fillna(-1).astype(int)
-        df = df[df['label'] != -1]  # ลบแถวที่มี label ไม่ถูกต้อง
+        logger.warning(f"พบ {df['label'].isna().sum()} แถวที่ label เป็น NaN. ลบแถวเหล่านั้น.")
+        df = df[df['label'].notna()]
+        df['label'] = df['label'].astype(int)
         if len(df) == 0:
-            raise ValueError("After removing invalid labels, dataset is empty. Please check the 'Disease' column.")
+            raise ValueError("Dataset ว่างหลังจากลบ label ไม่ถูกต้อง. ตรวจสอบคอลัมน์ 'Disease'.")
 
     # ตรวจสอบการกระจายของ class
     logger.info("Class distribution before balancing:")
     logger.info(df['Disease'].value_counts())
 
-    # ตรวจสอบว่ามีคอลัมน์ Province หรือไม่
+    # ตรวจสอบคอลัมน์ Province
     has_province = 'Province' in df.columns
     if not has_province:
-        logger.warning("คอลัมน์ 'Province' ไม่พบใน dataset.csv จะใช้จังหวัดจาก Frontend แทนในขั้นตอน prediction")
+        logger.warning("คอลัมน์ 'Province' ไม่พบใน dataset.csv จะใช้ province จาก Frontend แทน")
 
-    # คำนวณ numerical features พร้อม progress bar
+    # คำนวณ numerical features
     numerical_data = []
     for idx, row in tqdm(df.iterrows(), total=len(df), desc="Computing numerical features"):
         image_path = row['Image_URL']
@@ -375,10 +381,11 @@ def visualize_gradcam(model, image_path, device, output_path="gradcam_output.jpg
     return output_path
 
 # Training function
-def train_model(csv_path, model_path='model/best_val_model.pth', fine_tune=False):
+def train_model(csv_path, model_dir='model', fine_tune=False):
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     logger.info(f"Using device: {device}")
 
+    # เตรียมข้อมูล
     X, y, num_data = prepare_data(csv_path)
 
     if np.any(np.isnan(y)):
@@ -395,54 +402,37 @@ def train_model(csv_path, model_path='model/best_val_model.pth', fine_tune=False
         X, y, num_data, test_size=0.2, stratify=y, random_state=42
     )
 
-    train_set = set(X_train)
-    val_set = set(X_val)
-    overlap = train_set.intersection(val_set)
-    if overlap:
-        logger.info(f"Found {len(overlap)} overlapping samples between train and validation sets. Removing from validation set.")
-        val_indices = [i for i, path in enumerate(X_val) if path not in train_set]
-        X_val = X_val[val_indices]
-        y_val = y_val[val_indices]
-        num_val = num_val[val_indices]
-
     train_dataset = CustomDataset(X_train, y_train, num_train, transform=train_transform)
     val_dataset = CustomDataset(X_val, y_val, num_val, transform=val_transform)
-
-    if len(train_dataset) == 0 or len(val_dataset) == 0:
-        raise ValueError("Dataset is empty after filtering. Please check the image files and dataset.")
-
-    logger.info("Class distribution in training set:")
-    logger.info(pd.Series(train_dataset.labels).value_counts())
-    logger.info("Class distribution in validation set:")
-    logger.info(pd.Series(val_dataset.labels).value_counts())
 
     train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True, num_workers=4, pin_memory=True)
     val_loader = DataLoader(val_dataset, batch_size=BATCH_SIZE, shuffle=False, num_workers=4, pin_memory=True)
 
-    model = CustomModel()
-    model = model.to(device)
+    # สร้าง model
+    model = CustomModel().to(device)
 
-    logger.info("Training from scratch (fine_tune=False)")
-    for param in model.base_model.parameters():
-        param.requires_grad = False
-    for param in model.base_model.layer3.parameters():
-        param.requires_grad = True
-    for param in model.base_model.layer4.parameters():
-        param.requires_grad = True
-
+    # ตั้งค่า criterion, optimizer, scheduler
     criterion = FocalLoss(gamma=2.0, alpha=class_weights)
     optimizer = optim.Adam(filter(lambda p: p.requires_grad, model.parameters()), lr=0.0001, weight_decay=0.01)
     scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', factor=0.1, patience=3, verbose=True)
 
-    num_epochs = 30  # กำหนด 30 epochs ตามที่ต้องการ
+    num_epochs = 30
     best_val_acc = 0.0
     best_val_loss = float('inf')
     patience = 5
     patience_counter = 0
 
+    # สร้างชื่อไฟล์โมเดลด้วย timestamp
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    os.makedirs(model_dir, exist_ok=True)
+    model_path = os.path.join(model_dir, f"model_{timestamp}.pth")
+    logger.info(f"Model will be saved as: {model_path}")
+
+    # สร้างไฟล์ metrics CSV
     with open("training_metrics.csv", "w") as f:
         f.write("Epoch,Train Loss,Train Acc,Train F1,Val Loss,Val Acc,Val F1,Val Precision,Val Recall\n")
 
+    # --- Training loop ---
     for epoch in range(num_epochs):
         model.train()
         train_loss = 0.0
@@ -473,12 +463,14 @@ def train_model(csv_path, model_path='model/best_val_model.pth', fine_tune=False
         train_acc = train_correct / train_total
         train_f1 = f1_score(train_labels, train_preds, average='weighted')
 
+        # Validation
         model.eval()
         val_loss = 0.0
         val_correct = 0
         val_total = 0
         val_preds = []
         val_labels = []
+
         with torch.no_grad():
             for batch in tqdm(val_loader, desc=f"Validation Epoch {epoch+1}/{num_epochs}"):
                 inputs, labels = batch
@@ -510,11 +502,12 @@ def train_model(csv_path, model_path='model/best_val_model.pth', fine_tune=False
             f.write(f"{epoch+1},{train_loss/len(train_loader)},{train_acc},{train_f1},"
                     f"{val_loss/len(val_loader)},{val_acc},{val_f1},{val_precision},{val_recall}\n")
 
+        # Save best model (ไม่ทับ)
         if val_loss < best_val_loss:
             best_val_loss = val_loss
             best_val_acc = val_acc
             torch.save(model.state_dict(), model_path)
-            logger.info(f"Saved best model with val_loss: {val_loss/len(val_loader):.4f}, val_acc: {val_acc:.4f}")
+            logger.info(f"Saved best model: {model_path} with val_loss: {val_loss/len(val_loader):.4f}, val_acc: {val_acc:.4f}")
             patience_counter = 0
         else:
             patience_counter += 1
@@ -528,9 +521,11 @@ def train_model(csv_path, model_path='model/best_val_model.pth', fine_tune=False
     logger.info("Analyzing feature importance...")
     analyze_feature_importance(model, val_loader, device, NUMERICAL_FEATURES)
 
-    logger.info(f"Best validation accuracy: {best_val_acc*100:.2f}%")
-    return model
+    logger.info(f"Training finished. Best validation accuracy: {best_val_acc*100:.2f}%")
+    logger.info(f"Final model saved as: {model_path}")
+    return model, model_path
+
 
 if __name__ == "__main__":
     os.makedirs("model", exist_ok=True)
-    model = train_model("dataset_updated.csv", fine_tune=False)
+    model = train_model("../../dataset_updated.csv", fine_tune=False)
