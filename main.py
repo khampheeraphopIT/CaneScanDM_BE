@@ -1,16 +1,15 @@
 import os
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
 from src.routes.prediction import router as prediction_router
 from src.routes.province import router as province_router
 from src.utils.logger import logger
 from src.config import settings
-from fastapi.responses import FileResponse
-from fastapi import HTTPException
 
 app = FastAPI()
 
-# ✅ CORS
+# CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.ALLOW_ORIGINS,
@@ -19,11 +18,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# ✅ Routes
+# Routes
 app.include_router(province_router)
 app.include_router(prediction_router)
 
-# ✅ Static file serving (uploads, gradcam, etc.)
+# Static file serving
 @app.get("/{path:path}")
 async def serve_file(path: str):
     file_path = os.path.join(os.getcwd(), path)
