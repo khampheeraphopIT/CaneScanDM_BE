@@ -1,143 +1,97 @@
-import sys
 import os
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
+import sys
 import torch
-from model.model import CustomModel, CustomDataset, val_transform  # เปลี่ยนเป็น absolute import
-from torch.utils.data import DataLoader
 import pandas as pd
-import numpy as np
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import MinMaxScaler
+from torch.utils.data import DataLoader
 from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score, confusion_matrix, classification_report
 import seaborn as sns
 import matplotlib.pyplot as plt
 from tqdm import tqdm
-import logging
 
-# Setup logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-logger = logging.getLogger(__name__)
+# --- เพิ่ม path ของ parent folder เพื่อ import model ---
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-# Constants (ต้องเหมือนกับใน train.py)
-NUMERICAL_FEATURES = [
-    'Temperature', 'Humidity_PER', 'Rainfall',
-    'VARI', 'ExG', 'CIVE',
-    'GLCM_Contrast', 'GLCM_Homogeneity', 'GLCM_Energy',
-    'LBP_Feature', 'Edge_Density'
-]
+# --- import โมเดลและ dataset ของคุณ ---
+from model.model import CustomModel, CustomDataset, val_transform, prepare_data
 
-# Data preparation (เหมือนใน train.py)
-def prepare_data(csv_path):
-    logger.info(f"Loading dataset from {csv_path}")
-    df = pd.read_csv(csv_path)
-    
-    # แปลงค่าใน Disease ให้เป็นตัวพิมพ์ใหญ่ทั้งหมด
-    df['Disease'] = df['Disease'].str.capitalize()
-    label_map = {"Healthy": 0, "Yellow": 1, "Rust": 2, "Redrot": 3, "Mosaic": 4, "Notsugarcane": 5}
-    df['label'] = df['Disease'].map(label_map)
+DEVICE = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-    # ตรวจสอบและจัดการ NaN ใน label
-    if df['label'].isna().any():
-        num_na = df['label'].isna().sum()
-        df = df.dropna(subset=['label'])
-        logger.warning(f"Removed {num_na} rows with NaN labels.")
+# --- Paths ---
+CSV_PATH = "../../dataset_updated.csv"
+MODEL_PATH = "../model/model/model_20251019_122736.pth"
+RESULTS_DIR = "results"
+os.makedirs(RESULTS_DIR, exist_ok=True)
 
-    image_paths = df['Image_URL'].values
-    labels = df['label'].values.astype(int)
-    
-    # เตรียม numerical data
-    numerical_data = np.zeros((len(df), len(NUMERICAL_FEATURES)))
-    available_features = [col for col in NUMERICAL_FEATURES if col in df.columns]
-    if available_features:
-        numerical_data[:, :len(available_features)] = df[available_features].values
-    scaler = MinMaxScaler()
-    numerical_data = scaler.fit_transform(numerical_data)
-    
-    logger.info(f"Dataset prepared with {len(image_paths)} samples")
-    return image_paths, labels, numerical_data
+# --- เตรียมข้อมูล ---
+print("Preparing data...")
+image_paths, labels, numerical_data = prepare_data(CSV_PATH)
 
-# Evaluation function
-def evaluate_model(csv_path, model_path='model/best_val_model.pth'):
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    logger.info(f"Using device for evaluation: {device}")
+from sklearn.model_selection import train_test_split
+_, X_val, _, y_val, _, num_val = train_test_split(
+    image_paths, labels, numerical_data, test_size=0.2, stratify=labels, random_state=42
+)
 
-    # Prepare data
-    image_paths, labels, numerical_data = prepare_data(csv_path)
-    _, X_val, _, y_val, _, num_val = train_test_split(
-        image_paths, labels, numerical_data, test_size=0.2, stratify=labels, random_state=42
-    )
+val_dataset = CustomDataset(X_val, y_val, num_val, transform=val_transform)
+val_loader = DataLoader(val_dataset, batch_size=32, shuffle=False)
 
-    # Create dataset and dataloader for evaluation
-    eval_dataset = CustomDataset(X_val, y_val, num_val, transform=val_transform)
-    eval_loader = DataLoader(eval_dataset, batch_size=16, shuffle=False, num_workers=4, pin_memory=True)
+# --- โหลด model ---
+print("Loading model...")
+model = CustomModel().to(DEVICE)
+model.load_state_dict(torch.load(MODEL_PATH, map_location=DEVICE))
+model.eval()
 
-    # Load the trained model
-    model = CustomModel().to(device)
-    model.load_state_dict(torch.load(model_path, map_location=device))
-    model.eval()
+# --- Evaluate ---
+all_preds = []
+all_labels = []
 
-    # Evaluation loop
-    logger.info("Starting evaluation...")
-    all_preds, all_labels = [], []
-    with torch.no_grad():
-        for inputs, labels in tqdm(eval_loader, desc="Evaluating"):
-            images = inputs['image'].to(device)
-            numerical = inputs['numerical'].to(device)
-            labels = labels.to(device)
-            outputs = model(images, numerical)
-            preds = outputs.argmax(1)
-            all_preds.extend(preds.cpu().numpy())
-            all_labels.extend(labels.cpu().numpy())
+with torch.no_grad():
+    for batch in tqdm(val_loader, desc="Evaluating"):
+        inputs, labels_batch = batch
+        images = inputs['image'].to(DEVICE)
+        numerical = inputs['numerical'].to(DEVICE)
+        labels_batch = labels_batch.to(DEVICE)
 
-    logger.info("Evaluation completed.")
+        outputs = model(images, numerical)
+        _, preds = torch.max(outputs, 1)
 
-    # Calculate metrics
-    accuracy = accuracy_score(all_labels, all_preds)
-    f1 = f1_score(all_labels, all_preds, average='weighted')
-    precision = precision_score(all_labels, all_preds, average='weighted', zero_division=0)
-    recall = recall_score(all_labels, all_preds, average='weighted', zero_division=0)
+        all_preds.extend(preds.cpu().numpy())
+        all_labels.extend(labels_batch.cpu().numpy())
 
-    # Log metrics
-    logger.info(f"Accuracy: {accuracy:.4f}")
-    logger.info(f"F1-Score (weighted): {f1:.4f}")
-    logger.info(f"Precision (weighted): {precision:.4f}")
-    logger.info(f"Recall (weighted): {recall:.4f}")
+# --- Metrics ---
+accuracy = accuracy_score(all_labels, all_preds)
+f1 = f1_score(all_labels, all_preds, average='weighted')
+precision = precision_score(all_labels, all_preds, average='weighted', zero_division=0)
+recall = recall_score(all_labels, all_preds, average='weighted', zero_division=0)
+conf_matrix = confusion_matrix(all_labels, all_preds)
 
-    # Classification report
-    class_names = ["Healthy", "Yellow", "Rust", "Redrot", "Mosaic", "Notsugarcane"]
-    report = classification_report(all_labels, all_preds, target_names=class_names, zero_division=0)
-    logger.info("Classification Report:\n" + report)
+print(f"Accuracy: {accuracy:.4f}")
+print(f"F1-score: {f1:.4f}")
+print(f"Precision: {precision:.4f}")
+print(f"Recall: {recall:.4f}")
 
-    # Confusion Matrix
-    cm = confusion_matrix(all_labels, all_preds)
-    plt.figure(figsize=(10, 8))
-    sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', xticklabels=class_names, yticklabels=class_names)
-    plt.xlabel('Predicted')
-    plt.ylabel('True')
-    plt.title('Confusion Matrix')
-    plt.tight_layout()
-    plt.savefig('confusion_matrix.png')
-    logger.info("Confusion matrix saved as 'confusion_matrix.png'")
+# --- Classification report ---
+class_names = ['Healthy','Yellow','Rust','RedRot','Mosaic','NotSugarcane']
+report = classification_report(all_labels, all_preds, target_names=class_names, zero_division=0)
+print("\nClassification Report:\n")
+print(report)
 
-    # Save predictions and true labels to CSV
-    results_df = pd.DataFrame({
-        'True_Label': all_labels,
-        'Predicted_Label': all_preds
-    })
-    results_df.to_csv('evaluation_results.csv', index=False)
-    logger.info("Predictions and true labels saved to 'evaluation_results.csv'")
+# --- Save results CSV ---
+results_df = pd.DataFrame({
+    'Image': [val_dataset.image_paths[i] for i in range(len(val_dataset))],
+    'True_Label': [val_dataset.labels[i] for i in range(len(val_dataset))],
+    'Pred_Label': all_preds
+})
+results_csv_path = os.path.join(RESULTS_DIR, "evaluation_results.csv")
+results_df.to_csv(results_csv_path, index=False)
+print(f"Saved evaluation results to {results_csv_path}")
 
-    return all_preds, all_labels, {
-        'accuracy': accuracy,
-        'f1': f1,
-        'precision': precision,
-        'recall': recall,
-        'confusion_matrix': cm
-    }
-
-# Main execution
-if __name__ == "__main__":
-    csv_path = "dataset_updated.csv"  # ใช้ไฟล์เดียวกับที่เทรน
-    model_path = "model/best_val_model.pth"
-    predictions, true_labels, metrics = evaluate_model(csv_path, model_path)
+# --- Confusion Matrix Heatmap ---
+plt.figure(figsize=(8,6))
+sns.heatmap(conf_matrix, annot=True, fmt="d", cmap="Blues", xticklabels=class_names, yticklabels=class_names)
+plt.xlabel("Predicted Label")
+plt.ylabel("True Label")
+plt.title("Confusion Matrix")
+heatmap_path = os.path.join(RESULTS_DIR, "confusion_matrix.png")
+plt.savefig(heatmap_path)
+plt.close()
+print(f"Saved confusion matrix heatmap to {heatmap_path}")
