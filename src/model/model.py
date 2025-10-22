@@ -40,7 +40,7 @@ NUMERICAL_FEATURES = [
 ]
 
 # โหลดข้อมูลจังหวัดจาก api_province.json
-with open("../../api_province.json", "r", encoding="utf-8") as f:
+with open("api_province.json", "r", encoding="utf-8") as f:
     provinces_data = json.load(f)
 
 # สร้าง mapping ชื่อจังหวัด
