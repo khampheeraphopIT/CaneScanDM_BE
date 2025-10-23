@@ -4,9 +4,9 @@ from fastapi import HTTPException
 from src.utils.logger import logger
 from src.utils.constants import reverse_label_map
 from src.config import settings
-from src.model.model import CustomModel, compute_all_features, val_transform, visualize_gradcam
+from src.model.inference import CustomModel, compute_all_features, val_transform, visualize_gradcam
 
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+device = torch.device('cpu')
 
 try:
     model = CustomModel()
@@ -17,7 +17,6 @@ try:
 except Exception as e:
     logger.error(f"Failed to load model: {e}")
     raise HTTPException(status_code=500, detail="Failed to load model")
-
 
 def predict_image(image_path: str, province: str):
     try:
@@ -41,7 +40,6 @@ def predict_image(image_path: str, province: str):
     }
 
     return disease, confidence_value, probabilities_dict, weather_data
-
 
 def generate_gradcam(image_path: str, output_path: str):
     try:

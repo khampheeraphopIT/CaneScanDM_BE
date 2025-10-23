@@ -1,1 +1,10 @@
+__pycache__/
 .venv/
+*.pyc
+.env
+uploads/
+gradcam/
+*.pth  # ถ้า model file ใหญ่ ใช้ Git LFS หรือ upload แยก
+prediction_logs.csv
+training_metrics.csv
+shap_feature_importance.png
