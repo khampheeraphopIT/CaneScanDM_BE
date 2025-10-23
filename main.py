@@ -18,10 +18,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Routes
-app.include_router(province_router)
-app.include_router(prediction_router)
-
 for folder in [settings.UPLOAD_FOLDER, settings.GRAD_CAM_FOLDER]:
     os.makedirs(folder, exist_ok=True)
     logger.info(f"Ensured folder exists: {folder}")
@@ -38,3 +34,4 @@ async def root():
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host=settings.HOST, port=settings.PORT)
+    
