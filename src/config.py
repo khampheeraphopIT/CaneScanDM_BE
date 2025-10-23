@@ -5,7 +5,7 @@ load_dotenv()
 class Settings:
     BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     UPLOAD_FOLDER = os.path.join(os.getcwd(), "uploads")
-    GRAD_CAM_FOLDER = os.path.join(os.getcwd(), "gradcam")
+    GRAD_CAM_FOLDER = os.path.join(os.getcwd(), "src", "gradcam")
     MODEL_PATH = os.getenv(
         "MODEL_PATH",
         os.path.join(BASE_DIR, "src", "model", "model", "model_20251019_122736.pth")

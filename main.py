@@ -25,6 +25,7 @@ app.include_router(prediction_router)
 # Serve static files (uploads & gradcam)
 os.makedirs(settings.UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(settings.GRAD_CAM_FOLDER, exist_ok=True)
+# Mount static files
 app.mount("/static/uploads", StaticFiles(directory=settings.UPLOAD_FOLDER), name="uploads")
 app.mount("/static/gradcam", StaticFiles(directory=settings.GRAD_CAM_FOLDER), name="gradcam")
 
