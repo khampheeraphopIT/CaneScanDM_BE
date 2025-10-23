@@ -22,13 +22,8 @@ app.add_middleware(
 app.include_router(province_router)
 app.include_router(prediction_router)
 
-for folder in [settings.UPLOAD_FOLDER, settings.GRAD_CAM_FOLDER]:
-    os.makedirs(folder, exist_ok=True)
-    logger.info(f"Ensured folder exists: {folder}")
-
-# Mount static files
+os.makedirs(settings.UPLOAD_FOLDER, exist_ok=True)
 app.mount("/static/uploads", StaticFiles(directory=settings.UPLOAD_FOLDER), name="uploads")
-app.mount("/static/gradcam", StaticFiles(directory=settings.GRAD_CAM_FOLDER), name="gradcam")
 
 # Root endpoint
 @app.get("/")

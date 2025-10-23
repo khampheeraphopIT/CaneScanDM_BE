@@ -5,7 +5,7 @@ import os
 
 from src.utils.logger import logger
 from src.config import settings
-from src.services.model_service import predict_image, generate_gradcam
+from src.services.model_service import predict_image
 from src.services.risk_analysis import analyze_risk
 from src.services.csv_logger import save_upload_to_csv
 from src.routes.province import provinces
@@ -21,7 +21,6 @@ async def predict_disease(file: UploadFile = File(...), province: str = Form(...
 
     timestamp = datetime.utcnow()
     os.makedirs(settings.UPLOAD_FOLDER, exist_ok=True)
-    os.makedirs(settings.GRAD_CAM_FOLDER, exist_ok=True)
 
     filename, ext = os.path.splitext(file.filename)
     image_filename = f"{filename}_{timestamp.strftime('%Y%m%d_%H%M%S')}{ext}"
@@ -39,9 +38,6 @@ async def predict_disease(file: UploadFile = File(...), province: str = Form(...
         }, status_code=400)
 
     risk_level = analyze_risk(disease, weather)
-    gradcam_filename = f"gradcam_{timestamp.strftime('%Y%m%d_%H%M%S')}.jpg"
-    gradcam_path = os.path.join(settings.GRAD_CAM_FOLDER, gradcam_filename)
-    gradcam_result = generate_gradcam(image_path, gradcam_path)
 
     upload_data = {
         "timestamp": timestamp,
@@ -67,6 +63,5 @@ async def predict_disease(file: UploadFile = File(...), province: str = Form(...
         "temperature": weather["temperature"],
         "humidity": weather["humidity"],
         "rainfall": weather["rainfall"],
-        "probabilities": probabilities,
-        "gradcam_path": gradcam_result or "Grad-CAM generation failed"
+        "probabilities": probabilities
     }
