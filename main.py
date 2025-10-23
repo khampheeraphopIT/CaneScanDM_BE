@@ -22,8 +22,8 @@ app.add_middleware(
 app.include_router(province_router)
 app.include_router(prediction_router)
 
-os.makedirs(settings.UPLOAD_FOLDER, exist_ok=True)
-app.mount("/static/uploads", StaticFiles(directory=settings.UPLOAD_FOLDER), name="uploads")
+# os.makedirs(settings.UPLOAD_FOLDER, exist_ok=True)
+# app.mount("/static/uploads", StaticFiles(directory=settings.UPLOAD_FOLDER), name="uploads")
 
 # Root endpoint
 @app.get("/")
