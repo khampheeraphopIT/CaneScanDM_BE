@@ -30,6 +30,6 @@ app.include_router(prediction_router)
 async def root():
     return {"message": "Backend is running!"}
 
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host=settings.HOST, port=settings.PORT)
+# if __name__ == "__main__":
+#     import uvicorn
+#     uvicorn.run(app, host=settings.HOST, port=settings.PORT)

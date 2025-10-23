@@ -16,7 +16,7 @@ class Settings:
         "http://localhost:5173,http://10.0.2.2:8000"
     ).split(",")
     HOST = os.getenv("HOST", "0.0.0.0")
-    PORT = int(os.getenv("PORT", 8000))
+    PORT = int(os.getenv("PORT", os.environ.get("PORT", 8000))) 
     OPENWEATHER_API_KEY = os.getenv("OPENWEATHER_API_KEY")
 
 settings = Settings()
