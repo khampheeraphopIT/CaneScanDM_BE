@@ -17,7 +17,12 @@ async def predict_disease(file: UploadFile = File(...), province: str = Form(...
     if not file.filename.lower().endswith(('.png', '.jpg', '.jpeg')):
         raise HTTPException(status_code=400, detail="กรุณาอัปโหลดไฟล์ภาพ (.png, .jpg, .jpeg) เท่านั้น")
     if province not in provinces:
-        raise HTTPException(status_code=400, detail="จังหวัดไม่ถูกต้อง")
+        raise HTTPException(
+            status_code=400,
+            detail=f"จังหวัดไม่ถูกต้อง: '{province}'. "
+                f"โปรดเลือกจาก: {', '.join(provinces[:5])}... "
+                f"(ทั้งหมด {len(provinces)} จังหวัด)"
+        )
 
     timestamp = datetime.utcnow()
     os.makedirs(settings.UPLOAD_FOLDER, exist_ok=True)
