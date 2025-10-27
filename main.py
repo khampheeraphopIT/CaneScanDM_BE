@@ -1,7 +1,6 @@
 import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
 from src.routes.prediction import router as prediction_router
 from src.routes.province import router as province_router
 from src.config import settings
@@ -30,6 +29,6 @@ app.include_router(prediction_router)
 async def root():
     return {"message": "Backend is running!"}
 
-# if __name__ == "__main__":
-#     import uvicorn
-#     uvicorn.run(app, host=settings.HOST, port=settings.PORT)
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host=settings.HOST, port=settings.PORT)

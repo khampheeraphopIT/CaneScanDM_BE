@@ -11,3 +11,4 @@ Timestamp,Image_Path,Disease,Confidence,Risk_Level,Province,Temperature,Humidity
 2025-10-19 10:30:03.866878,C:\Users\poplo\Desktop\DM\uploads\87d2c0e7_c2301011c9ffb5b84b7b0d9e461850ee_20251019_103003.jpg,Rust,0.9934117197990417,Medium,กรุงเทพมหานคร,31.94,57,0.0
 2025-10-20 05:35:18.264286,C:\Users\poplo\Desktop\DM\uploads\scaled_healthy (12)_20251020_053518.jpg,Healthy,0.9180439114570618,Low,กรุงเทพมหานคร,32.94,56,0.0
 2025-10-20 05:35:28.318033,C:\Users\poplo\Desktop\DM\uploads\scaled_healthy (12)_20251020_053528.jpg,Healthy,0.9180439114570618,Low,กรุงเทพมหานคร,32.94,56,0.0
+2025-10-27 08:18:05.847592,C:\Users\poplo\Desktop\DM\uploads\scaled_healthy (1)_20251027_081805.jpg,Healthy,0.9193557500839233,Low,กรุงเทพมหานคร,32.04,57,0.0
