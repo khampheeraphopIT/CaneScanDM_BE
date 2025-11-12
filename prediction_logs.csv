@@ -28,3 +28,4 @@ Timestamp,Image_Path,Disease,Confidence,Risk_Level,Province,Temperature,Humidity
 2025-10-28 06:21:19.944327,C:\Users\poplo\Desktop\DM\uploads\scaled_rust (10)_20251028_062119.jpg,Rust,0.756249189376831,Low,นนทบุรี,29.95,61,0.0
 2025-10-28 06:22:21.096560,C:\Users\poplo\Desktop\DM\uploads\scaled_redrot (140)_20251028_062221.jpg,Redrot,0.8530124425888062,Low,นนทบุรี,29.95,61,0.0
 2025-11-07 14:09:44.839660,C:\Users\poplo\Desktop\DM\uploads\scaled_mosaic (13)_20251107_140944.jpg,Mosaic,0.7851807475090027,Low,นนทบุรี,30.0,70.0,0.0
+2025-11-08 05:50:52.836604,C:\Users\poplo\Desktop\DM\uploads\scaled_yellow (1)_20251108_055052.jpg,Redrot,0.6258479356765747,Low,กรุงเทพมหานคร,27.94,74,0.0
