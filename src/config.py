@@ -13,7 +13,7 @@ class Settings:
     CSV_LOG_PATH = os.path.join(BASE_DIR, "prediction_logs.csv")
     ALLOW_ORIGINS = os.getenv(
         "ALLOW_ORIGINS",
-        "http://localhost:5173,http://10.0.2.2:8000"
+        "http://localhost:5173,http://10.0.2.2:8000,https://dm-web.onrender.com"
     ).split(",")
     HOST = os.getenv("HOST", "0.0.0.0")
     PORT = int(os.getenv("PORT", os.environ.get("PORT", 8000))) 
