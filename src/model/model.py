@@ -50,7 +50,7 @@ def apply_clahe(image):
 
 # Data transforms
 train_transform = transforms.Compose([
-    transforms.Lambda(lambda img: apply_clahe(img)),
+    transforms.Lambda(apply_clahe),
     transforms.Resize((IMAGE_SIZE + 32, IMAGE_SIZE + 32)),
     transforms.RandomResizedCrop(size=IMAGE_SIZE, scale=(0.2, 1.0)), # Robustness for far/near
     transforms.RandomHorizontalFlip(p=0.5),
@@ -62,7 +62,7 @@ train_transform = transforms.Compose([
 ])
 
 val_transform = transforms.Compose([
-    transforms.Lambda(lambda img: apply_clahe(img)),
+    transforms.Lambda(apply_clahe),
     transforms.Resize((IMAGE_SIZE, IMAGE_SIZE)),
     transforms.ToTensor(),
     transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
@@ -148,6 +148,14 @@ def prepare_and_train(csv_path, model_dir='model'):
     df = pd.read_csv(csv_path)
     images_dir = os.path.abspath(os.path.join(os.path.dirname(csv_path), "src/images"))
     df['Image_URL'] = df['Image_URL'].apply(lambda x: os.path.join(images_dir, os.path.basename(x)))
+    
+    # Filter only existing files
+    initial_count = len(df)
+    df = df[df['Image_URL'].apply(os.path.exists)]
+    filtered_count = len(df)
+    if filtered_count < initial_count:
+        logger.warning(f"Filtered out {initial_count - filtered_count} missing images.")
+        
     df = df.drop_duplicates(subset=['Image_URL']).dropna(subset=['Disease'])
     
     label_map = {"Healthy": 0, "Yellow": 1, "Rust": 2, "Redrot": 3, "Mosaic": 4, "Notsugarcane": 5}
@@ -160,14 +168,35 @@ def prepare_and_train(csv_path, model_dir='model'):
     X_img_paths = df['Image_URL'].values
     y_labels = df['label'].values.astype(int)
     
-    # We simulate weather features if not present in CSV for training consistency
-    # In a real scenario, these should be in the dataset_updated.csv
+    # Caching mechanism for features to save time on restarts
+    feature_cache_path = os.path.join(model_dir, "feature_cache.joblib")
+    cache = {}
+    if os.path.exists(feature_cache_path):
+        try:
+            cache = joblib.load(feature_cache_path)
+            logger.info(f"Loaded {len(cache)} features from cache.")
+        except Exception as e:
+            logger.warning(f"Failed to load cache: {e}")
+
     numerical_raw = []
+    new_features_count = 0
+    
     for path in tqdm(X_img_paths, desc="Extracting features"):
-        # Dummy weather + calculated image features
-        weather = [28.0, 75.0, 0.0] 
-        img_feats = compute_image_features(path)
-        numerical_raw.append(weather + img_feats)
+        if path in cache:
+            numerical_raw.append(cache[path])
+        else:
+            # Dummy weather + calculated image features
+            weather = [28.0, 75.0, 0.0] 
+            img_feats = compute_image_features(path)
+            feat = weather + img_feats
+            numerical_raw.append(feat)
+            cache[path] = feat
+            new_features_count += 1
+            
+    if new_features_count > 0:
+        os.makedirs(model_dir, exist_ok=True)
+        joblib.dump(cache, feature_cache_path)
+        logger.info(f"Saved {new_features_count} new features to cache.")
         
     numerical_raw = np.array(numerical_raw)
     
@@ -190,7 +219,7 @@ def prepare_and_train(csv_path, model_dir='model'):
     train_ds = CustomDataset(X_img_paths[train_idx], y_labels[train_idx], num_train, transform=train_transform)
     val_ds = CustomDataset(X_img_paths[val_idx], y_labels[val_idx], num_val, transform=val_transform)
     
-    train_loader = DataLoader(train_ds, batch_size=BATCH_SIZE, shuffle=True, num_workers=4)
+    train_loader = DataLoader(train_ds, batch_size=BATCH_SIZE, shuffle=True, num_workers=4, drop_last=True)
     val_loader = DataLoader(val_ds, batch_size=BATCH_SIZE, shuffle=False, num_workers=4)
     
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')

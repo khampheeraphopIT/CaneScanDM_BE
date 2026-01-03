@@ -27,7 +27,7 @@ def apply_clahe(image):
     return Image.fromarray(img_cv)
 
 val_transform = transforms.Compose([
-    transforms.Lambda(lambda img: apply_clahe(img)),
+    transforms.Lambda(apply_clahe),
     transforms.Resize((IMAGE_SIZE, IMAGE_SIZE)),
     transforms.ToTensor(),
     transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
@@ -65,18 +65,50 @@ def compute_image_features(image_path):
 with open(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "api_province.json"), "r", encoding="utf-8") as f:
     provinces_data = json.load(f)
 
-THAI_PROVINCES_MAPPING = {prov["name_th"].lower(): prov["name_en"] for prov in provinces_data}
-THAI_PROVINCES_MAPPING.update({
-    "กรุงเทพมหานคร": "Bangkok",
-    "ลพบุรี": "Lopburi",
-    "หนองบัวลำภู": "Nong Bua Lamphu",
-    "พังงา": "Phang Nga",
-    "บึงกาฬ": "Bueng Kan",
-})
+# Mapping จากข้อมูลผู้ใช้เพื่อแก้ปัญหาการสะกดไม่ตรงกัน
+ENGLISH_TO_THAI = {
+    "Bangkok": "กรุงเทพมหานคร", "Krung Thep Maha Nakhon": "กรุงเทพมหานคร",
+    "Krabi": "กระบี่", "Kanchanaburi": "กาญจนบุรี", "Kalasin": "กาฬสินธุ์",
+    "Kamphaeng Phet": "กำแพงเพชร", "Khon Kaen": "ขอนแก่น", "Chanthaburi": "จันทบุรี",
+    "Chachoengsao": "ฉะเชิงเทรา", "Chonburi": "ชลบุรี", "Chon Buri": "ชลบุรี",
+    "Chai Nat": "ชัยนาท", "Chaiyaphum": "ชัยภูมิ", "Chumphon": "ชุมพร",
+    "Trang": "ตรัง", "Trat": "ตราด", "Tak": "ตาก", "Nakhon Nayok": "นครนายก",
+    "Nakhon Pathom": "นครปฐม", "Nakhon Phanom": "นครพนม", "Nakhon Ratchasima": "นครราชสีมา",
+    "Nakhon Si Thammarat": "นครศรีธรรมราช", "Nakhon Sawan": "นครสวรรค์",
+    "Nonthaburi": "นนทบุรี", "Narathiwat": "นราธิวาส", "Nan": "น่าน",
+    "Bueng Kan": "บึงกาฬ", "buogkan": "บึงกาฬ", "Buri Ram": "บุรีรัมย์",
+    "Buriram": "บุรีรัมย์", "Pathum Thani": "ปทุมธานี", "Prachuap Khiri Khan": "ประจวบคีรีขันธ์",
+    "Prachinburi": "ปราจีนบุรี", "Prachin Buri": "ปราจีนบุรี", "Pattani": "ปัตตานี",
+    "Phra Nakhon Si Ayutthaya": "พระนครศรีอยุธยา", "Phayao": "พะเยา", "Phangnga": "พังงา",
+    "Phatthalung": "พัทลุง", "Phichit": "พิจิตร", "Phitsanulok": "พิษณุโลก", "Phuket": "ภูเก็ต",
+    "Maha Sarakham": "มหาสารคาม", "Mukdahan": "มุกดาหาร", "Yala": "ยะลา", "Yasothon": "ยโสธร",
+    "Ranong": "ระนอง", "Rayong": "ระยอง", "Ratchaburi": "ราชบุรี", "Roi Et": "ร้อยเอ็ด",
+    "Lopburi": "ลพบุรี", "Loburi": "ลพบุรี", "Lampang": "ลำปาง", "Lamphun": "ลำพูน",
+    "Sisaket": "ศรีสะเกษ", "Si Sa Ket": "ศรีสะเกษ", "Sakon Nakhon": "สกลนคร", "Songkhla": "สงขลา",
+    "Satun": "สตูล", "Samut Prakan": "สมุทรปราการ", "Samut Songkhram": "สมุทรสงคราม",
+    "Samut Sakhon": "สมุทรสาคร", "Saraburi": "สระบุรี", "Sa Kaeo": "สระแก้ว", "Sing Buri": "สิงห์บุรี",
+    "Suphan Buri": "สุพรรณบุรี", "Surat Thani": "สุราษฎร์ธานี", "Surin": "สุรินทร์",
+    "Sukhothai": "สุโขทัย", "Nong Khai": "หนองคาย", "Nong Bua Lamphu": "หนองบัวลำภู",
+    "Amnat Charoen": "อำนาจเจริญ", "Udon Thani": "อุดรธานี", "Uttaradit": "อุตรดิตถ์",
+    "Uthai Thani": "อุทัยธานี", "Ubon Ratchathani": "อุบลราชธานี", "Ang Thong": "อ่างทอง",
+    "Chiang Rai": "เชียงราย", "Chiang Mai": "เชียงใหม่", "Phetchaburi": "เพชรบุรี",
+    "Phetchabun": "เพชรบูรณ์", "Loei": "เลย", "Phrae": "แพร่", "Mae Hong Son": "แม่ฮ่องสอน"
+}
 
-def get_weather_data(province):
-    province_lower = province.lower()
-    province_mapped = THAI_PROVINCES_MAPPING.get(province_lower, province)
+# Reverse mapping for API calls (Thai to English)
+THAI_TO_ENGLISH = {v: k for k, v in ENGLISH_TO_THAI.items()}
+
+def get_weather_data(province, temperature=None, humidity=None, rainfall=None):
+    # ถ้าส่งค่ามาจาก Frontend ให้ใช้ค่านั้นเลย
+    if temperature is not None and humidity is not None and rainfall is not None:
+        return [float(temperature), float(humidity), float(rainfall)], {
+            "temperature": float(temperature),
+            "humidity": float(humidity),
+            "rainfall": float(rainfall),
+            "source": "frontend"
+        }
+
+    province_mapped = THAI_TO_ENGLISH.get(province, province)
 
     api_key = settings.OPENWEATHER_API_KEY
     if not api_key:
@@ -96,12 +128,21 @@ def get_weather_data(province):
         logger.error(f"Failed to fetch weather for {province_mapped}: {e}")
         return [30.0, 70.0, 0.0], {"temperature": 30.0, "humidity": 70.0, "rainfall": 0.0}
 
-def predict_single_image(model, scaler, device, image_path, province):
+def predict_single_image(model, scaler, device, image_path, province, weather_override=None):
     try:
         image = Image.open(image_path).convert('RGB')
         img_tensor = val_transform(image).unsqueeze(0).to(device)
         
-        weather_feat, weather_dict = get_weather_data(province)
+        if weather_override:
+            weather_feat, weather_dict = get_weather_data(
+                province, 
+                temperature=weather_override.get('temperature'),
+                humidity=weather_override.get('humidity'),
+                rainfall=weather_override.get('rainfall')
+            )
+        else:
+            weather_feat, weather_dict = get_weather_data(province)
+            
         img_feat = compute_image_features(image_path)
         raw_nums = np.array([weather_feat + img_feat])
         
@@ -128,11 +169,10 @@ def predict_single_image(model, scaler, device, image_path, province):
         logger.error(f"Prediction error for {image_path}: {e}")
         return {"error": str(e)}
 
-def predict_image_batch(image_paths: list, provinces: list):
+def predict_image_batch(image_paths: list, provinces: list, weather_overrides: list = None):
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     model = SugarcaneDiseaseModel().to(device)
     
-    # Load best model and scaler from settings
     if os.path.exists(settings.MODEL_PATH):
         model.load_state_dict(torch.load(settings.MODEL_PATH, map_location=device))
     model.eval()
@@ -142,8 +182,9 @@ def predict_image_batch(image_paths: list, provinces: list):
         scaler = joblib.load(settings.SCALER_PATH)
 
     results = []
-    for img_p, prov in zip(image_paths, provinces):
-        res = predict_single_image(model, scaler, device, img_p, prov)
+    for i, (img_p, prov) in enumerate(zip(image_paths, provinces)):
+        w_override = weather_overrides[i] if weather_overrides else None
+        res = predict_single_image(model, scaler, device, img_p, prov, weather_override=w_override)
         results.append(res)
             
     return results

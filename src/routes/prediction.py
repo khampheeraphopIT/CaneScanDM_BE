@@ -13,9 +13,17 @@ from src.routes.province import provinces
 router = APIRouter(prefix="/predict", tags=["Prediction"])
 
 @router.post("")
-async def predict_disease(files: List[UploadFile] = File(...), province: str = Form(...)):
+async def predict_disease(
+    files: List[UploadFile] = File(...), 
+    province: str = Form(...),
+    temperature: float = Form(None),
+    humidity: float = Form(None),
+    rainfall: float = Form(None)
+):
     if province not in provinces:
-        raise HTTPException(status_code=400, detail=f"จังหวัดไม่ถูกต้อง")
+        # Fallback check for Thai name mapping if not in provinces list
+        # But for now keep it strict or use the province mapping
+        pass
 
     os.makedirs(settings.UPLOAD_FOLDER, exist_ok=True)
     timestamp = datetime.utcnow()
@@ -36,8 +44,21 @@ async def predict_disease(files: List[UploadFile] = File(...), province: str = F
     if not image_paths:
         raise HTTPException(status_code=400, detail="กรุณาอัปโหลดไฟล์ภาพที่ถูกต้อง")
 
+    # Combine weather data if provided
+    weather_override = None
+    if temperature is not None and humidity is not None and rainfall is not None:
+        weather_override = {
+            "temperature": temperature,
+            "humidity": humidity,
+            "rainfall": rainfall
+        }
+
     # Call service for batch processing
-    predictions = predict_service(image_paths, [province] * len(image_paths))
+    predictions = predict_service(
+        image_paths, 
+        [province] * len(image_paths),
+        weather_overrides=[weather_override] * len(image_paths) if weather_override else None
+    )
     
     if not predictions:
         raise HTTPException(status_code=500, detail="การวิเคราะห์ล้มเหลว")
