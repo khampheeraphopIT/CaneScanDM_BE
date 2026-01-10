@@ -1,97 +1,113 @@
 import os
-import sys
 import torch
 import pandas as pd
+import numpy as np
+import joblib
 from torch.utils.data import DataLoader
+from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score, confusion_matrix, classification_report
+from sklearn.model_selection import train_test_split
 import seaborn as sns
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 
-# --- เพิ่ม path ของ parent folder เพื่อ import model ---
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+from src.model.model_arch import SugarcaneDiseaseModel
+from src.model.model import CustomDataset, val_transform
+from src.config import settings
 
-# --- import โมเดลและ dataset ของคุณ ---
-from model.model import CustomModel, CustomDataset, val_transform, prepare_data
+def evaluate_model():
+    DEVICE = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    print(f"Using device: {DEVICE}")
 
-DEVICE = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    # 1. Paths
+    CSV_PATH = "dataset_synced.csv"
 
-# --- Paths ---
-CSV_PATH = "../../dataset_updated.csv"
-MODEL_PATH = "../model/model/model_20251019_122736.pth"
-RESULTS_DIR = "results"
-os.makedirs(RESULTS_DIR, exist_ok=True)
+    MODEL_PATH = os.path.join("model", "best_model.pth")
+    SCALER_PATH = os.path.join("model", "scaler.joblib")
+    RESULTS_DIR = "evaluation_results"
+    os.makedirs(RESULTS_DIR, exist_ok=True)
 
-# --- เตรียมข้อมูล ---
-print("Preparing data...")
-image_paths, labels, numerical_data = prepare_data(CSV_PATH)
+    if not os.path.exists(MODEL_PATH):
+        print(f"Error: Model not found at {MODEL_PATH}")
+        return
 
-from sklearn.model_selection import train_test_split
-_, X_val, _, y_val, _, num_val = train_test_split(
-    image_paths, labels, numerical_data, test_size=0.2, stratify=labels, random_state=42
-)
+    # 2. Load Data (Keep consistent with model.py)
+    print("Loading data...")
+    df = pd.read_csv(CSV_PATH)
+    images_dir = os.path.abspath(os.path.join(os.path.dirname(CSV_PATH), "src/images"))
+    df['Image_URL'] = df['Image_URL'].apply(lambda x: os.path.join(images_dir, os.path.basename(x)))
+    df = df[df['Image_URL'].apply(os.path.exists)]
+    df = df.drop_duplicates(subset=['Image_URL']).dropna(subset=['Disease'])
 
-val_dataset = CustomDataset(X_val, y_val, num_val, transform=val_transform)
-val_loader = DataLoader(val_dataset, batch_size=32, shuffle=False)
+    label_map = {"Healthy": 0, "Yellow": 1, "Rust": 2, "Redrot": 3, "Mosaic": 4, "Notsugarcane": 5}
+    df['label'] = df['Disease'].str.capitalize().map(label_map)
+    df = df.dropna(subset=['label'])
 
-# --- โหลด model ---
-print("Loading model...")
-model = CustomModel().to(DEVICE)
-model.load_state_dict(torch.load(MODEL_PATH, map_location=DEVICE))
-model.eval()
+    feature_cols = ['Temperature', 'Humidity_PER', 'Rainfall',
+                    'VARI', 'ExG', 'CIVE', 'GLCM_Contrast', 
+                    'GLCM_Homogeneity', 'GLCM_Energy', 
+                    'LBP_Feature', 'Edge_Density']
+    
+    X_img_paths = df['Image_URL'].values
+    y_labels = df['label'].values.astype(int)
+    numerical_raw = df[feature_cols].values
 
-# --- Evaluate ---
-all_preds = []
-all_labels = []
+    # 3. Split & Scale (Must match model.py split logic)
+    indices = np.arange(len(y_labels))
+    _, val_idx = train_test_split(indices, test_size=0.2, stratify=y_labels, random_state=42)
+    
+    scaler = joblib.load(SCALER_PATH)
+    num_val = scaler.transform(numerical_raw[val_idx])
 
-with torch.no_grad():
-    for batch in tqdm(val_loader, desc="Evaluating"):
-        inputs, labels_batch = batch
-        images = inputs['image'].to(DEVICE)
-        numerical = inputs['numerical'].to(DEVICE)
-        labels_batch = labels_batch.to(DEVICE)
+    val_ds = CustomDataset(X_img_paths[val_idx], y_labels[val_idx], num_val, transform=val_transform)
+    val_loader = DataLoader(val_ds, batch_size=32, shuffle=False)
 
-        outputs = model(images, numerical)
-        _, preds = torch.max(outputs, 1)
+    # 4. Load Model
+    print("Loading model...")
+    model = SugarcaneDiseaseModel(num_numerical_features=len(feature_cols), num_classes=6).to(DEVICE)
+    model.load_state_dict(torch.load(MODEL_PATH, map_location=DEVICE))
+    model.eval()
 
-        all_preds.extend(preds.cpu().numpy())
-        all_labels.extend(labels_batch.cpu().numpy())
+    # 5. Evaluate
+    all_preds = []
+    all_labels = []
 
-# --- Metrics ---
-accuracy = accuracy_score(all_labels, all_preds)
-f1 = f1_score(all_labels, all_preds, average='weighted')
-precision = precision_score(all_labels, all_preds, average='weighted', zero_division=0)
-recall = recall_score(all_labels, all_preds, average='weighted', zero_division=0)
-conf_matrix = confusion_matrix(all_labels, all_preds)
+    with torch.no_grad():
+        for batch, (target) in tqdm(val_loader, desc="Evaluating"):
+            imgs = batch['image'].to(DEVICE)
+            nums = batch['numerical'].to(DEVICE)
+            target = target.to(DEVICE)
 
-print(f"Accuracy: {accuracy:.4f}")
-print(f"F1-score: {f1:.4f}")
-print(f"Precision: {precision:.4f}")
-print(f"Recall: {recall:.4f}")
+            output = model(imgs, nums)
+            preds = output.argmax(1)
 
-# --- Classification report ---
-class_names = ['Healthy','Yellow','Rust','RedRot','Mosaic','NotSugarcane']
-report = classification_report(all_labels, all_preds, target_names=class_names, zero_division=0)
-print("\nClassification Report:\n")
-print(report)
+            all_preds.extend(preds.cpu().numpy())
+            all_labels.extend(target.cpu().numpy())
 
-# --- Save results CSV ---
-results_df = pd.DataFrame({
-    'Image': [val_dataset.image_paths[i] for i in range(len(val_dataset))],
-    'True_Label': [val_dataset.labels[i] for i in range(len(val_dataset))],
-    'Pred_Label': all_preds
-})
-results_csv_path = os.path.join(RESULTS_DIR, "evaluation_results.csv")
-results_df.to_csv(results_csv_path, index=False)
-print(f"Saved evaluation results to {results_csv_path}")
+    # 6. Metrics
+    accuracy = accuracy_score(all_labels, all_preds)
+    f1 = f1_score(all_labels, all_preds, average='weighted')
+    report = classification_report(all_labels, all_preds, 
+                                 target_names=list(label_map.keys()), 
+                                 zero_division=0)
+    
+    print(f"\nOverall Accuracy: {accuracy:.4f}")
+    print(f"Weighted F1-score: {f1:.4f}")
+    print("\nClassification Report:\n")
+    print(report)
 
-# --- Confusion Matrix Heatmap ---
-plt.figure(figsize=(8,6))
-sns.heatmap(conf_matrix, annot=True, fmt="d", cmap="Blues", xticklabels=class_names, yticklabels=class_names)
-plt.xlabel("Predicted Label")
-plt.ylabel("True Label")
-plt.title("Confusion Matrix")
-heatmap_path = os.path.join(RESULTS_DIR, "confusion_matrix.png")
-plt.savefig(heatmap_path)
-plt.close()
-print(f"Saved confusion matrix heatmap to {heatmap_path}")
+    # 7. Confusion Matrix
+    cm = confusion_matrix(all_labels, all_preds)
+    plt.figure(figsize=(10, 8))
+    sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', 
+                xticklabels=list(label_map.keys()), 
+                yticklabels=list(label_map.keys()))
+    plt.title('Confusion Matrix')
+    plt.ylabel('Actual')
+    plt.xlabel('Predicted')
+    cm_path = os.path.join(RESULTS_DIR, "confusion_matrix.png")
+    plt.savefig(cm_path)
+    print(f"\nConfusion matrix saved to {cm_path}")
+
+if __name__ == "__main__":
+    evaluate_model()

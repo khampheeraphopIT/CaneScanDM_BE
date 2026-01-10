@@ -29,3 +29,90 @@ Timestamp,Image_Path,Disease,Confidence,Risk_Level,Province,Temperature,Humidity
 2025-10-28 06:22:21.096560,C:\Users\poplo\Desktop\DM\uploads\scaled_redrot (140)_20251028_062221.jpg,Redrot,0.8530124425888062,Low,นนทบุรี,29.95,61,0.0
 2025-11-07 14:09:44.839660,C:\Users\poplo\Desktop\DM\uploads\scaled_mosaic (13)_20251107_140944.jpg,Mosaic,0.7851807475090027,Low,นนทบุรี,30.0,70.0,0.0
 2025-11-08 05:50:52.836604,C:\Users\poplo\Desktop\DM\uploads\scaled_yellow (1)_20251108_055052.jpg,Redrot,0.6258479356765747,Low,กรุงเทพมหานคร,27.94,74,0.0
+2026-01-03 12:23:12.496596,C:\Users\poplo\Desktop\DM\uploads\resized_87d2c0e7_c2301011c9ffb5b84b7b0d9e461850ee_122312.jpg,Mosaic,0.18078531324863434,Low,กรุงเทพมหานคร,29.9,42.0,0.0
+2026-01-03 12:24:26.090902,C:\Users\poplo\Desktop\DM\uploads\resized_87d2c0e7_c2301011c9ffb5b84b7b0d9e461850ee_122426.jpg,Rust,0.18155565857887268,Low,กรุงเทพมหานคร,29.9,42.0,0.0
+2026-01-03 12:24:51.383500,C:\Users\poplo\Desktop\DM\uploads\resized_image_122451.png,Rust,0.17820318043231964,Low,กรุงเทพมหานคร,29.9,42.0,0.0
+2026-01-03 12:25:01.305618,C:\Users\poplo\Desktop\DM\uploads\resized_image_122501.png,Healthy,0.18512845039367676,Low,กรุงเทพมหานคร,29.9,42.0,0.0
+2026-01-03 12:25:20.614690,C:\Users\poplo\Desktop\DM\uploads\resized_sm_122520.jpg,Rust,0.20924779772758484,Low,กรุงเทพมหานคร,29.9,42.0,0.0
+2026-01-04 10:31:10.719320,C:\Users\poplo\Desktop\DM\uploads\resized_87d2c0e7_c2301011c9ffb5b84b7b0d9e461850ee_103110.jpg,Healthy,0.18182651698589325,Low,กรุงเทพมหานคร,30.48,39.0,0.0
+2026-01-04 10:32:59.667684,C:\Users\poplo\Desktop\DM\uploads\resized_sm_103259.jpg,Redrot,0.18192988634109497,Low,กรุงเทพมหานคร,30.48,39.0,0.0
+2026-01-04 10:33:46.446681,C:\Users\poplo\Desktop\DM\uploads\resized_sm_103346.jpg,Notsugarcane,0.1945544183254242,Low,กรุงเทพมหานคร,30.48,39.0,0.0
+2026-01-04 10:33:50.678001,C:\Users\poplo\Desktop\DM\uploads\resized_sm_103350.jpg,Notsugarcane,0.18968036770820618,Low,กรุงเทพมหานคร,30.48,39.0,0.0
+2026-01-04 10:34:08.670367,C:\Users\poplo\Desktop\DM\uploads\resized_sm_103408.jpg,Notsugarcane,0.18156395852565765,Low,กรุงเทพมหานคร,30.48,39.0,0.0
+2026-01-04 10:34:08.670367,C:\Users\poplo\Desktop\DM\uploads\resized_87d2c0e7_c2301011c9ffb5b84b7b0d9e461850ee_103408.jpg,Notsugarcane,0.1742088943719864,Low,กรุงเทพมหานคร,30.48,39.0,0.0
+2026-01-04 10:35:05.339980,C:\Users\poplo\Desktop\DM\uploads\resized_sm_103505.jpg,Healthy,0.18001729249954224,Low,กรุงเทพมหานคร,30.48,39.0,0.0
+2026-01-04 10:35:05.339980,C:\Users\poplo\Desktop\DM\uploads\resized_87d2c0e7_c2301011c9ffb5b84b7b0d9e461850ee_103505.jpg,Healthy,0.18332216143608093,Low,กรุงเทพมหานคร,30.48,39.0,0.0
+2026-01-04 10:39:21.274562,C:\Users\poplo\Desktop\DM\uploads\resized_87d2c0e7_c2301011c9ffb5b84b7b0d9e461850ee_103921.jpg,Mosaic,0.1894472986459732,Low,กรุงเทพมหานคร,30.5,39.0,0.0
+2026-01-04 10:39:24.637417,C:\Users\poplo\Desktop\DM\uploads\resized_87d2c0e7_c2301011c9ffb5b84b7b0d9e461850ee_103924.jpg,Rust,0.17966850101947784,Medium,กรุงเทพมหานคร,30.5,39.0,0.0
+2026-01-04 10:39:27.332509,C:\Users\poplo\Desktop\DM\uploads\resized_87d2c0e7_c2301011c9ffb5b84b7b0d9e461850ee_103927.jpg,Yellow,0.17886173725128174,Medium,กรุงเทพมหานคร,30.5,39.0,0.0
+2026-01-04 10:39:29.502195,C:\Users\poplo\Desktop\DM\uploads\resized_87d2c0e7_c2301011c9ffb5b84b7b0d9e461850ee_103929.jpg,Redrot,0.18620820343494415,Low,กรุงเทพมหานคร,30.5,39.0,0.0
+2026-01-04 10:39:32.015395,C:\Users\poplo\Desktop\DM\uploads\resized_87d2c0e7_c2301011c9ffb5b84b7b0d9e461850ee_103932.jpg,Redrot,0.17757131159305573,Low,กรุงเทพมหานคร,30.5,39.0,0.0
+2026-01-04 10:39:34.532759,C:\Users\poplo\Desktop\DM\uploads\resized_87d2c0e7_c2301011c9ffb5b84b7b0d9e461850ee_103934.jpg,Yellow,0.18893268704414368,Medium,กรุงเทพมหานคร,30.5,39.0,0.0
+2026-01-04 10:39:36.764911,C:\Users\poplo\Desktop\DM\uploads\resized_87d2c0e7_c2301011c9ffb5b84b7b0d9e461850ee_103936.jpg,Notsugarcane,0.18015791475772858,Low,กรุงเทพมหานคร,30.5,39.0,0.0
+2026-01-04 10:40:20.117326,C:\Users\poplo\Desktop\DM\uploads\resized_sm_104020.jpg,Rust,0.1811731904745102,Medium,กรุงเทพมหานคร,30.5,39.0,0.0
+2026-01-04 10:45:21.438054,C:\Users\poplo\Desktop\DM\uploads\resized_sm_104521.jpg,Redrot,0.18711717426776886,Low,กรุงเทพมหานคร,30.43,39.0,0.0
+2026-01-04 10:45:21.438054,C:\Users\poplo\Desktop\DM\uploads\resized_[NSM] InnoTech Tour Taiwan_104521.png,Mosaic,0.18457694351673126,Low,กรุงเทพมหานคร,30.43,39.0,0.0
+2026-01-04 10:45:21.438054,C:\Users\poplo\Desktop\DM\uploads\resized_2_104521.png,Redrot,0.18670503795146942,Low,กรุงเทพมหานคร,30.43,39.0,0.0
+2026-01-04 10:45:21.438054,C:\Users\poplo\Desktop\DM\uploads\resized_-3-320_104521.webp,Mosaic,0.17774514853954315,Low,กรุงเทพมหานคร,30.43,39.0,0.0
+2026-01-04 10:45:21.438054,C:\Users\poplo\Desktop\DM\uploads\resized_2025-04-08T0-21-9_9_64_93_104521.jpg,Mosaic,0.18627753853797913,Low,กรุงเทพมหานคร,30.43,39.0,0.0
+2026-01-04 10:45:21.438054,C:\Users\poplo\Desktop\DM\uploads\resized_2025-04-28T6-42-11_21_69_58_104521.png,Mosaic,0.18162961304187775,Low,กรุงเทพมหานคร,30.43,39.0,0.0
+2026-01-04 10:45:21.438054,C:\Users\poplo\Desktop\DM\uploads\resized_2025-04-28T6-45-5_87_62_91_104521.png,Mosaic,0.19250518083572388,Low,กรุงเทพมหานคร,30.43,39.0,0.0
+2026-01-04 10:45:21.438054,C:\Users\poplo\Desktop\DM\uploads\resized_67363257f3ab95001dd5daba_104521.jpg,Healthy,0.18546341359615326,Low,กรุงเทพมหานคร,30.43,39.0,0.0
+2026-01-04 10:45:21.438054,C:\Users\poplo\Desktop\DM\uploads\resized_115494641_center_104521.png,Mosaic,0.17935210466384888,Low,กรุงเทพมหานคร,30.43,39.0,0.0
+2026-01-04 10:45:21.438054,C:\Users\poplo\Desktop\DM\uploads\resized_285449426_5753563298012641_7133246239826690034_n_104521.jpg,Healthy,0.18320098519325256,Low,กรุงเทพมหานคร,30.43,39.0,0.0
+2026-01-04 10:45:21.438054,C:\Users\poplo\Desktop\DM\uploads\resized_484294092_1079084930907724_5055400838797477956_n_104521.jpg,Redrot,0.1798039823770523,Low,กรุงเทพมหานคร,30.43,39.0,0.0
+2026-01-04 10:45:21.438054,C:\Users\poplo\Desktop\DM\uploads\resized_502481737_1025335479781431_8323423560238914747_n_104521.jpg,Mosaic,0.19339928030967712,Low,กรุงเทพมหานคร,30.43,39.0,0.0
+2026-01-04 10:45:21.438054,C:\Users\poplo\Desktop\DM\uploads\resized_506943514_1022596930055286_768626044557887122_n_104521.jpg,Redrot,0.18230466544628143,Low,กรุงเทพมหานคร,30.43,39.0,0.0
+2026-01-04 10:45:21.438054,C:\Users\poplo\Desktop\DM\uploads\resized_527231116_1056774123304233_1223143930076257103_n_104521.jpg,Mosaic,0.18714559078216553,Low,กรุงเทพมหานคร,30.43,39.0,0.0
+2026-01-04 10:45:21.438054,C:\Users\poplo\Desktop\DM\uploads\resized_AD PR-งานเทศกาลหุ่นโลก_0_104521.jpg,Mosaic,1.0,Low,กรุงเทพมหานคร,30.43,39.0,0.0
+2026-01-04 10:45:21.438054,C:\Users\poplo\Desktop\DM\uploads\resized_Artboard 1_104521.png,Mosaic,0.18304099142551422,Low,กรุงเทพมหานคร,30.43,39.0,0.0
+2026-01-04 10:52:55.600043,C:\Users\poplo\Desktop\DM\uploads\resized_87d2c0e7_c2301011c9ffb5b84b7b0d9e461850ee_105255.jpg,Healthy,0.18893854320049286,Low,กรุงเทพมหานคร,30.38,39.0,0.0
+2026-01-04 11:04:28.709345,C:\Users\poplo\Desktop\DM\uploads\resized_87d2c0e7_c2301011c9ffb5b84b7b0d9e461850ee_110428.jpg,Yellow,0.17556330561637878,Medium,กรุงเทพมหานคร,29.9,40.0,0.0
+2026-01-04 11:04:39.694956,C:\Users\poplo\Desktop\DM\uploads\resized_87d2c0e7_c2301011c9ffb5b84b7b0d9e461850ee_110439.jpg,Notsugarcane,0.19082799553871155,Low,กรุงเทพมหานคร,29.9,40.0,0.0
+2026-01-04 11:06:09.060801,C:\Users\poplo\Desktop\DM\uploads\resized_[NSM] InnoTech Tour Taiwan_110609.png,Mosaic,0.17401687800884247,Low,กรุงเทพมหานคร,29.9,40.0,0.0
+2026-01-04 11:06:09.060801,C:\Users\poplo\Desktop\DM\uploads\resized_2_110609.png,Yellow,0.17987100780010223,Medium,กรุงเทพมหานคร,29.9,40.0,0.0
+2026-01-04 11:06:09.060801,C:\Users\poplo\Desktop\DM\uploads\resized_-3-320_110609.webp,Rust,0.1826694756746292,Low,กรุงเทพมหานคร,29.9,40.0,0.0
+2026-01-04 11:06:09.060801,C:\Users\poplo\Desktop\DM\uploads\resized_2025-04-08T0-21-9_9_64_93_110609.jpg,Yellow,0.17670881748199463,Medium,กรุงเทพมหานคร,29.9,40.0,0.0
+2026-01-04 11:06:09.060801,C:\Users\poplo\Desktop\DM\uploads\resized_2025-04-28T6-42-11_21_69_58_110609.png,Rust,0.18029162287712097,Low,กรุงเทพมหานคร,29.9,40.0,0.0
+2026-01-04 11:06:09.060801,C:\Users\poplo\Desktop\DM\uploads\resized_2025-04-28T6-45-5_87_62_91_110609.png,Yellow,0.17744165658950806,Medium,กรุงเทพมหานคร,29.9,40.0,0.0
+2026-01-04 11:06:09.060801,C:\Users\poplo\Desktop\DM\uploads\resized_67363257f3ab95001dd5daba_110609.jpg,Yellow,0.18602994084358215,Medium,กรุงเทพมหานคร,29.9,40.0,0.0
+2026-01-04 11:06:09.060801,C:\Users\poplo\Desktop\DM\uploads\resized_115494641_center_110609.png,Rust,0.17623518407344818,Low,กรุงเทพมหานคร,29.9,40.0,0.0
+2026-01-04 11:06:09.060801,C:\Users\poplo\Desktop\DM\uploads\resized_285449426_5753563298012641_7133246239826690034_n_110609.jpg,Rust,0.17740337550640106,Low,กรุงเทพมหานคร,29.9,40.0,0.0
+2026-01-04 13:25:41.858714,C:\Users\poplo\Desktop\DM\uploads\resized_1111027-img_132541.png,Mosaic,0.18212266266345978,Low,กรุงเทพมหานคร,29.27,42.0,0.0
+2026-01-04 13:29:21.356266,C:\Users\poplo\Desktop\DM\uploads\resized_ใบอ้อ_132921.jpg,Rust,0.183122918009758,Low,กรุงเทพมหานคร,29.27,42.0,0.0
+2026-01-04 13:29:42.595408,C:\Users\poplo\Desktop\DM\uploads\resized_ใบอ้อ_132942.jpg,Healthy,0.18793943524360657,Low,กรุงเทพมหานคร,29.27,42.0,0.0
+2026-01-04 13:35:36.705204,C:\Users\poplo\Desktop\DM\uploads\resized_87d2c0e7_c2301011c9ffb5b84b7b0d9e461850ee_133536.jpg,ไม่สามารถระบุได้แน่ชัด (Uncertain),0.188506081700325,N/A,กรุงเทพมหานคร,29.27,42.0,0.0
+2026-01-04 13:36:22.928730,C:\Users\poplo\Desktop\DM\uploads\resized_อ้อย_133622.png,ไม่สามารถระบุได้แน่ชัด (Uncertain),0.17878742516040802,N/A,กรุงเทพมหานคร,29.27,42.0,0.0
+2026-01-04 14:16:21.208562,C:\Users\poplo\Desktop\DM\uploads\resized_1111027-img_141621.png,ไม่สามารถระบุได้แน่ชัด (Uncertain),0.17920224368572235,N/A,กรุงเทพมหานคร,28.75,43.0,0.0
+2026-01-05 06:29:51.987178,C:\Users\poplo\Desktop\DM\uploads\resized_87d2c0e7_c2301011c9ffb5b84b7b0d9e461850ee_062951.jpg,ไม่สามารถระบุได้แน่ชัด (Uncertain),0.18266263604164124,N/A,กรุงเทพมหานคร,31.02,42.0,0.0
+2026-01-05 06:37:53.161705,C:\Users\poplo\Desktop\DM\uploads\resized_87d2c0e7_c2301011c9ffb5b84b7b0d9e461850ee_063753.jpg,ไม่สามารถระบุได้แน่ชัด (Uncertain),0.18266263604164124,N/A,กรุงเทพมหานคร,31.02,42.0,0.0
+2026-01-05 08:09:31.199121,C:\Users\poplo\Desktop\DM\uploads\resized_1111027-img_080931.png,Notsugarcane,1.0,Low,กรุงเทพมหานคร,32.63,35.0,0.0
+2026-01-05 08:09:56.063129,C:\Users\poplo\Desktop\DM\uploads\resized_1111027-img_080956.png,Notsugarcane,1.0,Low,กรุงเทพมหานคร,32.63,35.0,0.0
+2026-01-05 08:10:17.931251,C:\Users\poplo\Desktop\DM\uploads\resized_image_00004_081017.jpg,Notsugarcane,1.0,Low,กรุงเทพมหานคร,32.63,35.0,0.0
+2026-01-05 08:10:20.566428,C:\Users\poplo\Desktop\DM\uploads\resized_image_00004_081020.jpg,Notsugarcane,1.0,Low,กรุงเทพมหานคร,32.63,35.0,0.0
+2026-01-05 08:10:55.122957,C:\Users\poplo\Desktop\DM\uploads\resized_87d2c0e7_c2301011c9ffb5b84b7b0d9e461850ee_081055.jpg,Notsugarcane,1.0,Low,กรุงเทพมหานคร,32.63,35.0,0.0
+2026-01-05 08:17:16.449170,C:\Users\poplo\Desktop\DM\uploads\resized_87d2c0e7_c2301011c9ffb5b84b7b0d9e461850ee_081716.jpg,Notsugarcane,1.0,Low,กรุงเทพมหานคร,32.63,35.0,0.0
+2026-01-05 08:17:22.806046,C:\Users\poplo\Desktop\DM\uploads\resized_87d2c0e7_c2301011c9ffb5b84b7b0d9e461850ee_081722.jpg,Notsugarcane,1.0,Low,กรุงเทพมหานคร,32.63,35.0,0.0
+2026-01-05 08:31:56.233472,C:\Users\poplo\Desktop\DM\uploads\resized_1111027-img_083156.png,RedRot,1.0,Low,กรุงเทพมหานคร,31.89,41.0,0.0
+2026-01-05 08:32:21.901542,C:\Users\poplo\Desktop\DM\uploads\resized_87d2c0e7_c2301011c9ffb5b84b7b0d9e461850ee_083221.jpg,RedRot,1.0,Low,กรุงเทพมหานคร,31.89,41.0,0.0
+2026-01-05 08:32:24.178857,C:\Users\poplo\Desktop\DM\uploads\resized_87d2c0e7_c2301011c9ffb5b84b7b0d9e461850ee_083224.jpg,RedRot,1.0,Low,กรุงเทพมหานคร,31.89,41.0,0.0
+2026-01-05 08:32:32.754958,C:\Users\poplo\Desktop\DM\uploads\resized_87d2c0e7_c2301011c9ffb5b84b7b0d9e461850ee_083232.jpg,RedRot,1.0,Low,กรุงเทพมหานคร,31.89,41.0,0.0
+2026-01-05 08:32:32.754958,C:\Users\poplo\Desktop\DM\uploads\resized_2025-04-28T6-42-11_21_69_58_083232.png,RedRot,1.0,Low,กรุงเทพมหานคร,31.89,41.0,0.0
+2026-01-05 08:32:41.350562,C:\Users\poplo\Desktop\DM\uploads\resized_2025-04-28T6-42-11_21_69_58_083241.png,RedRot,1.0,Low,กรุงเทพมหานคร,31.89,41.0,0.0
+2026-01-05 08:32:41.350562,C:\Users\poplo\Desktop\DM\uploads\resized_2025-04-28T6-45-5_87_62_91_083241.png,RedRot,1.0,Low,กรุงเทพมหานคร,31.89,41.0,0.0
+2026-01-05 08:51:41.677157,C:\Users\poplo\Desktop\DM\uploads\resized_67363257f3ab95001dd5daba_085141.jpg,ไม่สามารถระบุได้แน่ชัด (Uncertain),0.1874043345451355,N/A,กรุงเทพมหานคร,32.64,35.0,0.0
+2026-01-05 08:52:16.973991,C:\Users\poplo\Desktop\DM\uploads\resized_1111027-img_085216.png,ไม่สามารถระบุได้แน่ชัด (Uncertain),0.17498943209648132,N/A,กรุงเทพมหานคร,32.64,35.0,0.0
+2026-01-05 08:52:24.120604,C:\Users\poplo\Desktop\DM\uploads\resized_87d2c0e7_c2301011c9ffb5b84b7b0d9e461850ee_085224.jpg,ไม่สามารถระบุได้แน่ชัด (Uncertain),0.18249443173408508,N/A,กรุงเทพมหานคร,32.64,35.0,0.0
+2026-01-07 08:54:05.572152,C:\Users\poplo\Desktop\DM\uploads\resized_87d2c0e7_c2301011c9ffb5b84b7b0d9e461850ee_085405.jpg,ไม่สามารถระบุได้แน่ชัด (Uncertain),0.20784534513950348,N/A,กรุงเทพมหานคร,29.54,43.0,0.0
+2026-01-10 15:04:57.843654,C:\Users\poplo\Desktop\DM\uploads\resized_Gemini_Generated_Image_m8qrwcm8qrwcm8qr_20260110_150457.png,Yellow,0.9958896040916443,Low,กรุงเทพมหานคร,22.67,61,0.0
+2026-01-10 15:11:35.740763,C:\Users\poplo\Desktop\DM\uploads\resized_87d2c0e7_c2301011c9ffb5b84b7b0d9e461850ee_20260110_151135.jpg,Notsugarcane,0.9278354048728943,Low,กรุงเทพมหานคร,22.67,61,0.0
+2026-01-10 15:13:03.715014,C:\Users\poplo\Desktop\DM\uploads\resized_5HuQN1762501288000_20260110_151303.png,Yellow,0.9972131848335266,Low,กรุงเทพมหานคร,22.67,61,0.0
+2026-01-10 15:17:07.228378,C:\Users\poplo\Desktop\DM\uploads\resized_87d2c0e7_c2301011c9ffb5b84b7b0d9e461850ee_20260110_151707.jpg,Notsugarcane,0.9107006788253784,Low,กรุงเทพมหานคร,22.67,61,0.0
+2026-01-10 15:21:03.708005,C:\Users\poplo\Desktop\DM\uploads\resized_87d2c0e7_c2301011c9ffb5b84b7b0d9e461850ee_20260110_152103.jpg,Notsugarcane,0.9107006788253784,Low,กรุงเทพมหานคร,22.28,67,0.0
+2026-01-10 15:21:12.148250,C:\Users\poplo\Desktop\DM\uploads\resized_1111027-img_20260110_152112.png,Yellow,0.9892451763153076,Low,กรุงเทพมหานคร,22.28,67,0.0
+2026-01-10 15:21:19.279990,C:\Users\poplo\Desktop\DM\uploads\resized_pngtree-sugarcane-leaves-fresh-green-close-upsugarcane-agriculture-juice-sugarcane-leaves-line-picture-image_10680284_20260110_152119.png,Rust,1.0,Low,กรุงเทพมหานคร,22.28,67,0.0
+2026-01-10 15:21:34.834925,C:\Users\poplo\Desktop\DM\uploads\resized_อ้อย_20260110_152134.png,Healthy,0.9721003770828247,Low,กรุงเทพมหานคร,22.28,67,0.0
+2026-01-10 15:21:38.070701,C:\Users\poplo\Desktop\DM\uploads\resized_อ้อย_20260110_152138.png,Healthy,0.9721003770828247,Low,กรุงเทพมหานคร,22.28,67,0.0
+2026-01-10 15:21:39.312821,C:\Users\poplo\Desktop\DM\uploads\resized_อ้อย_20260110_152139.png,Healthy,0.9721003770828247,Low,กรุงเทพมหานคร,22.28,67,0.0
+2026-01-10 15:32:51.298105,C:\Users\poplo\Desktop\DM\uploads\resized_1111027-img_20260110_153251.png,Yellow,0.9892451763153076,Low,กรุงเทพมหานคร,23.94,36,0.0
+2026-01-10 15:33:06.416713,C:\Users\poplo\Desktop\DM\uploads\resized_87d2c0e7_c2301011c9ffb5b84b7b0d9e461850ee_20260110_153306.jpg,Notsugarcane,0.910700798034668,Low,กรุงเทพมหานคร,23.94,36,0.0

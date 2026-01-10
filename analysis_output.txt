@@ -1,0 +1,32 @@
+--- Analyzing Dataset: dataset_updated.csv ---
+Total rows: 7578
+
+[OK] No missing values found.
+
+--- Feature Statistics ---
+                     min      max        mean         std
+Temperature        18.10    38.00   29.175984    4.418289
+Humidity_PER       45.10    90.00   71.451209   10.933963
+Rainfall          100.01   299.93  177.495739   53.445931
+VARI                0.00     0.99    0.106510    0.089011
+ExG                 0.00   229.35   56.501205   28.427867
+CIVE              -75.31    88.77    4.580401   12.985088
+GLCM_Contrast       0.00  2500.25   82.191617  145.852675
+GLCM_Homogeneity    0.00     0.90    0.379247    0.147716
+GLCM_Energy         0.00     0.79    0.056899    0.099317
+LBP_Feature         0.00     0.10    0.097559    0.015434
+Edge_Density        0.00     0.43    0.035705    0.052295
+
+--- Potential Outliers (Z-score > 3) ---
+VARI: 68 potential outliers (0.90%)
+ExG: 34 potential outliers (0.45%)
+CIVE: 23 potential outliers (0.30%)
+GLCM_Contrast: 206 potential outliers (2.72%)
+GLCM_Homogeneity: 19 potential outliers (0.25%)
+GLCM_Energy: 277 potential outliers (3.66%)
+LBP_Feature: 185 potential outliers (2.44%)
+Edge_Density: 297 potential outliers (3.92%)
+
+--- Image File Verification ---
+Files existing on disk: 7402 / 7578
+[WARNING] 176 images are missing from disk!
