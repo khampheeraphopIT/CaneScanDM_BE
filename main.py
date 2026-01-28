@@ -1,30 +1,31 @@
-import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from src.routes.prediction import router as prediction_router
-from src.routes.province import router as province_router
 from src.config import settings
-from src.utils.logger import logger
+from src.routes import predict, diseases
 
-app = FastAPI()
+app = FastAPI(
+    title="CaneScan DM API",
+    description="ระบบตรวจโรคใบอ้อยด้วย AI Vision",
+    version="2.0.0"
+)
 
 # CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.ALLOW_ORIGINS,
+    allow_origins=settings.ALLOWED_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
 # Routes
-app.include_router(province_router)
-app.include_router(prediction_router)
+app.include_router(predict.router, prefix="/api", tags=["Prediction"])
+app.include_router(diseases.router, prefix="/api", tags=["Diseases"])
 
-# os.makedirs(settings.UPLOAD_FOLDER, exist_ok=True)
-# app.mount("/static/uploads", StaticFiles(directory=settings.UPLOAD_FOLDER), name="uploads")
 
-# Root endpoint
 @app.get("/")
 async def root():
-    return {"message": "Backend is running!"}
+    return {
+        "message": "CaneScan DM API v2.0",
+        "docs": "/docs"
+    }
