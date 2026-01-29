@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from src.config import settings
 from src.routes import predict, diseases
+from src.services.rate_tracker import rate_tracker
 
 app = FastAPI(
     title="CaneScan DM API",
@@ -29,3 +30,10 @@ async def root():
         "message": "CaneScan DM API v2.0",
         "docs": "/docs"
     }
+
+
+@app.get("/api/rate-limit")
+async def get_rate_limit():
+    """Get current rate limit status"""
+    return rate_tracker.to_dict()
+
