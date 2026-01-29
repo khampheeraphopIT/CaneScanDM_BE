@@ -29,17 +29,7 @@ async def predict_disease(image: UploadFile = File(...)):
             "rate_limit": rate_tracker.to_dict()
         }
     
-    # Check rate limit before making request
-    rate_info = rate_tracker.get_info()
-    if not rate_info.can_request:
-        return {
-            "success": False,
-            "error_type": "rate_limit",
-            "error": "เกิน rate limit",
-            "retry_after": rate_info.next_available_in,
-            "message": f"กรุณารอ {rate_info.next_available_in} วินาที",
-            "rate_limit": rate_tracker.to_dict()
-        }
+    # Note: Rate limit is handled by Gemini API directly
     
     # Read image
     try:
