@@ -3,7 +3,6 @@ Prediction Route - API endpoint สำหรับวินิจฉัยโร
 """
 from fastapi import APIRouter, UploadFile, File
 from src.services.vision_service import analyze_leaf_image
-from src.services.rate_tracker import rate_tracker
 
 router = APIRouter()
 
@@ -25,11 +24,8 @@ async def predict_disease(image: UploadFile = File(...)):
             "success": False,
             "error_type": "invalid_file",
             "error": "ประเภทไฟล์ไม่ถูกต้อง",
-            "message": "รองรับเฉพาะไฟล์ภาพ JPG, PNG, WEBP เท่านั้น",
-            "rate_limit": rate_tracker.to_dict()
+            "message": "รองรับเฉพาะไฟล์ภาพ JPG, PNG, WEBP เท่านั้น"
         }
-    
-    # Note: Rate limit is handled by Gemini API directly
     
     # Read image
     try:
@@ -39,21 +35,10 @@ async def predict_disease(image: UploadFile = File(...)):
             "success": False,
             "error_type": "read_error",
             "error": str(e),
-            "message": f"ไม่สามารถอ่านไฟล์ได้: {str(e)}",
-            "rate_limit": rate_tracker.to_dict()
+            "message": f"ไม่สามารถอ่านไฟล์ได้: {str(e)}"
         }
-    
-    # Record the request
-    rate_tracker.record_request()
     
     # Analyze with Vision AI
     result = await analyze_leaf_image(image_bytes)
-    
-    # If rate limited from API, update tracker
-    if result.get("error_type") == "rate_limit" and result.get("retry_after"):
-        rate_tracker.set_rate_limited(result["retry_after"])
-    
-    # Add rate limit info to response
-    result["rate_limit"] = rate_tracker.to_dict()
     
     return result
