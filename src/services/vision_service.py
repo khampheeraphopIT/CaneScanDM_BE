@@ -105,12 +105,13 @@ async def analyze_leaf_image(image_bytes: bytes) -> dict:
         
         # Check for rate limit / quota errors
         if "429" in error_message or "RESOURCE_EXHAUSTED" in error_message:
+            is_daily_quota = "RESOURCE_EXHAUSTED" in error_message or "quota" in error_message.lower()
             return {
                 "success": False,
-                "error_type": "rate_limit",
-                "error": "เกิน rate limit - กรุณารอสักครู่",
-                "retry_after": retry_seconds or 60,
-                "message": "เกินขีดจำกัดการใช้งานชั่วคราว กรุณารอสักครู่"
+                "error_type": "quota_exceeded" if is_daily_quota else "rate_limit",
+                "error": "โควต้าประจำวันหมด" if is_daily_quota else "เกิน rate limit - กรุณารอสักครู่",
+                "retry_after": retry_seconds or (3600 if is_daily_quota else 60),
+                "message": "โควต้าวันนี้หมดแล้ว (20/20) กรุณารอวันใหม่" if is_daily_quota else "เกินขีดจำกัดการใช้งานชั่วคราว กรุณารอสักครู่"
             }
         elif "503" in error_message or "UNAVAILABLE" in error_message:
             return {
