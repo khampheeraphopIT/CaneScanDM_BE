@@ -37,7 +37,7 @@ async def predict_disease(image: UploadFile = File(...)):
             "error_type": "rate_limit",
             "error": "กรุณารอสักครู่",
             "retry_after": rate_info["next_available_in"],
-            "message": f"กรุณารอ {rate_info['next_available_in']} วินาที แล้วลองใหม่",
+            "message": "กรุณารอสักครู่ แล้วลองใหม่อีกครั้ง",
             "rate_limit": rate_info
         }
 

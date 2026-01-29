@@ -110,7 +110,7 @@ async def analyze_leaf_image(image_bytes: bytes) -> dict:
                 "error_type": "rate_limit",
                 "error": "เกิน rate limit - กรุณารอสักครู่",
                 "retry_after": retry_seconds or 60,
-                "message": f"กรุณารอ {retry_seconds or 60} วินาที แล้วลองใหม่"
+                "message": "เกินขีดจำกัดการใช้งานชั่วคราว กรุณารอสักครู่"
             }
         elif "503" in error_message or "UNAVAILABLE" in error_message:
             return {
@@ -118,7 +118,7 @@ async def analyze_leaf_image(image_bytes: bytes) -> dict:
                 "error_type": "server_overloaded",
                 "error": "Server ไม่ว่าง",
                 "retry_after": 10,
-                "message": "⏳ Gemini server กำลังยุ่ง กรุณารอ 10 วินาทีแล้วลองใหม่"
+                "message": "⏳ เซิร์ฟเวอร์กำลังยุ่ง กรุณารอสักครู่แล้วลองใหม่"
             }
         elif "quota" in error_message.lower():
             return {
