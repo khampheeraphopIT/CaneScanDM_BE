@@ -20,6 +20,13 @@ ENV/
 *.swp
 *.swo
 
+# Database
+*.sqlite
+*.db
+*.db-journal
+*.bak
+dump.sql
+
 # OS
 .DS_Store
 Thumbs.db
