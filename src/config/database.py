@@ -42,15 +42,20 @@ else:
 
 # --------------------------------------------------
 # SQLAlchemy async engine
-# --------------------------------------------------
+# Build engine with extra protection for production
 engine = create_async_engine(
-    DATABASE_URL,
+    DATABASE_URL, 
     echo=False,
-    pool_pre_ping=True,
-    pool_recycle=300,
+    pool_pre_ping=True,  # ตรวจสอบ connection ก่อนใช้งานทุกครั้ง
+    pool_recycle=300,    # รีเซ็ตการเชื่อมต่อทุก 5 นาที
+    pool_size=5,         # จำกัดจำนวน connection (ฟรีแพลนจำกัดจำนวน)
+    max_overflow=10,     # ขยายได้อีกนิดหน่อยถ้าจำเป็น
     connect_args={
-        "ssl": True,              # ✅ Required for Render/Supabase
-        "command_timeout": 60
+        "ssl": True if "localhost" not in DATABASE_URL else False,
+        "command_timeout": 60,
+        "server_settings": {
+            "tcp_user_timeout": "30000",
+        }
     }
 )
 
