@@ -16,6 +16,23 @@ from src.controllers.rate_limit_controller import RateLimitController
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Initialize database tables on startup"""
+    from src.config.database import DATABASE_URL
+    
+    # ดูว่า URL ที่ดึงมาได้เป็นยังไง (เซนเซอร์รหัสผ่าน)
+    db_url_str = str(DATABASE_URL)
+    masked_url = db_url_str
+    try:
+        if "@" in db_url_str:
+            parts = db_url_str.split("@")
+            prefix = parts[0]
+            if "://" in prefix and ":" in prefix.split("://")[1]:
+                proto, auth = prefix.split("://")
+                user, _ = auth.split(":")
+                masked_url = f"{proto}://{user}:****@{parts[1]}"
+    except:
+        masked_url = "Unable to mask URL"
+    
+    print(f"🚀 Starting up... Connecting to: {masked_url}")
     print("⏳ Checking database tables...")
 
     try:
@@ -23,11 +40,13 @@ async def lifespan(app: FastAPI):
             await conn.run_sync(Base.metadata.create_all)
         print("✅ Database tables ready!")
     except Exception as e:
-        # 🔥 พิมพ์ Error ออกมาดูว่าติดอะไร (เช่น SSL, Password, หรือ Connection)
-        print(f"❌ Database initialization failed: {str(e)}")
-        # ❗ ไม่ raise → ให้ app ยัง start ได้
-        # ถ้า raise → Render จะ kill service ทันที
-
+        print(f"❌ Database initialization failed!")
+        print(f"DEBUG - Error Type: {type(e)}")
+        print(f"DEBUG - Error Message: {str(e)}")
+        print(f"DEBUG - Error Repr: {repr(e)}")
+        if hasattr(e, 'orig'):
+            print(f"DEBUG - Original Error: {repr(e.orig)}")
+    
     yield
 
 
