@@ -2,6 +2,7 @@ from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.ext.asyncio import AsyncSession
 from contextlib import asynccontextmanager
+
 from src.config.settings import settings
 from src.config.database import get_db, engine
 from src.models.base import Base
@@ -14,11 +15,20 @@ from src.controllers.rate_limit_controller import RateLimitController
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Initialize database tables on startup (if not exist)"""
+    """Initialize database tables on startup"""
     print("⏳ Checking database tables...")
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
-    print("✅ Database tables ready!")
+
+    try:
+        async with engine.begin() as conn:
+            await conn.run_sync(Base.metadata.create_all)
+        print("✅ Database tables ready!")
+    except Exception as e:
+        # 🔥 สำคัญมากสำหรับ Render
+        print("❌ Database initialization failed!")
+        print(e)
+        # ❗ ไม่ raise → ให้ app ยัง start ได้
+        # ถ้า raise → Render จะ kill service ทันที
+
     yield
 
 
@@ -29,7 +39,9 @@ app = FastAPI(
     lifespan=lifespan
 )
 
+# --------------------------------------------------
 # CORS
+# --------------------------------------------------
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.ALLOWED_ORIGINS,
@@ -38,11 +50,12 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Routes (no /api prefix)
+# --------------------------------------------------
+# Routes
+# --------------------------------------------------
 app.include_router(auth.router, tags=["Authentication"])
 app.include_router(predict.router, tags=["Prediction"])
 app.include_router(diseases.router, tags=["Diseases"])
-
 
 
 @app.get("/")
@@ -63,4 +76,3 @@ async def get_rate_limit():
 async def get_history(db: AsyncSession = Depends(get_db)):
     """Fetch prediction history from database"""
     return await PredictionController.get_history(db)
-
