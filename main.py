@@ -30,7 +30,7 @@ async def lifespan(app: FastAPI):
                 user, _ = auth.split(":")
                 masked_url = f"{proto}://{user}:****@{parts[1]}"
     except:
-        masked_url = "Unable to mask URL"
+        masked_url = "Unable to mask URL" # test
     
     print(f"🚀 Starting up... Connecting to: {masked_url}")
     print("⏳ Checking database tables...")
