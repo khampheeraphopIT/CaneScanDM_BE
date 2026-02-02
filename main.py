@@ -23,9 +23,8 @@ async def lifespan(app: FastAPI):
             await conn.run_sync(Base.metadata.create_all)
         print("✅ Database tables ready!")
     except Exception as e:
-        # 🔥 สำคัญมากสำหรับ Render
-        print("❌ Database initialization failed!")
-        print(e)
+        # 🔥 พิมพ์ Error ออกมาดูว่าติดอะไร (เช่น SSL, Password, หรือ Connection)
+        print(f"❌ Database initialization failed: {str(e)}")
         # ❗ ไม่ raise → ให้ app ยัง start ได้
         # ถ้า raise → Render จะ kill service ทันที
 
