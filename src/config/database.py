@@ -52,7 +52,8 @@ engine = create_async_engine(
     max_overflow=10,     # ขยายได้อีกนิดหน่อยถ้าจำเป็น
     connect_args={
         "ssl": True if "localhost" not in DATABASE_URL else False,
-        "command_timeout": 60,
+        "timeout": 30,          # ⏳ เพิ่มเวลาในการรอเชื่อมต่อ (Handshake)
+        "command_timeout": 60,  # เวลาสำหรับรันคำสั่ง SQL
         "server_settings": {
             "tcp_user_timeout": "30000",
         }
