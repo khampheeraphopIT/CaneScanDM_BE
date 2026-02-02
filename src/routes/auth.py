@@ -79,9 +79,9 @@ async def register(request: RegisterRequest, db: AsyncSession = Depends(get_db))
     # Check if phone already exists
     existing = await db.execute(select(User).where(User.phone == request.phone))
     if existing.scalar_one_or_none():
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="เบอร์โทรศัพท์นี้ถูกใช้งานแล้ว"
+        return AuthResponse(
+            success=False,
+            message="เบอร์โทรศัพท์นี้ถูกใช้งานแล้ว"
         )
     
     # Create new user
@@ -113,9 +113,9 @@ async def login(request: LoginRequest, db: AsyncSession = Depends(get_db)):
     user = result.scalar_one_or_none()
     
     if not user or not verify_password(request.password, user.password_hash):
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="เบอร์โทรศัพท์หรือรหัสผ่านไม่ถูกต้อง"
+        return AuthResponse(
+            success=False,
+            message="เบอร์โทรศัพท์หรือรหัสผ่านไม่ถูกต้อง"
         )
     
     # Generate token
